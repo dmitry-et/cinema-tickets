@@ -3,7 +3,10 @@ package uk.gov.dwp.uc.pairtest;
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
+import uk.gov.dwp.uc.pairtest.exception.InvalidAccountException;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
+import uk.gov.dwp.uc.pairtest.exception.InvalidRequestException;
+import uk.gov.dwp.uc.pairtest.exception.TooManyTicketsException;
 
 public class TicketServiceImpl implements TicketService {
 
@@ -24,11 +27,24 @@ public class TicketServiceImpl implements TicketService {
      */
 
     @Override
-    public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException {
+    public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests)
+            throws InvalidPurchaseException {
+
+        verify(accountId);
+        verify(ticketTypeRequests);
+
         int totalAmountToPay = 0;
         ticketPaymentService.makePayment(accountId, totalAmountToPay);
         int totalSeatsToAllocate = 0;
         seatReservationService.reserveSeat(accountId, totalSeatsToAllocate);
+    }
+
+    private void verify(Long accountId) throws InvalidAccountException {
+        if(accountId <= 0) throw new InvalidAccountException();
+    }
+
+    private void verify(TicketTypeRequest[] ticketTypeRequests)throws InvalidRequestException {
+        if(ticketTypeRequests.length > MAX_REQUESTS) throw new TooManyTicketsException();
     }
 
 }
