@@ -11,6 +11,7 @@ import thirdparty.seatbooking.SeatReservationService;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidAccountException;
 import uk.gov.dwp.uc.pairtest.exception.InvalidRequestException;
+import uk.gov.dwp.uc.pairtest.exception.NoAdultTicketsException;
 import uk.gov.dwp.uc.pairtest.exception.TooManyTicketsException;
 
 import static org.junit.Assert.fail;
@@ -112,4 +113,17 @@ public class TicketServiceImplTest {
         }
     }
 
+    @Test
+    public void noAdultTickets() {
+        final Long accountId = 1L;
+        final TicketTypeRequest[] requests = new TicketTypeRequest[]{
+            new TicketTypeRequest(TicketTypeRequest.Type.INFANT, 1),
+            new TicketTypeRequest(TicketTypeRequest.Type.CHILD, 1)
+        };
+        try {
+            ticketService.purchaseTickets(accountId, requests);
+            fail("NoAdultTicketsException is not thrown when no adult tickets are requested");
+        } catch (NoAdultTicketsException ignored) {
+        }
+    }
 }
