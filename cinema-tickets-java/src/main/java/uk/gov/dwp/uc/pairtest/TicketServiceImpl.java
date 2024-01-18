@@ -11,6 +11,35 @@ public class TicketServiceImpl implements TicketService {
 
     public final static int MAX_REQUESTS = 20;
 
+    private static class PreProcessedRequest {
+        private int totalAmountToPay = 0;
+        private int totalSeatsToAllocate = 0;
+        private int totalTickets = 0;
+        private boolean adultTicketPresent = false;
+
+        void add(TicketTypeRequest ticketTypeRequest) {
+            if(ticketTypeRequest == null) throw new InvalidRequestException(); //TODO: Consider a new exception class
+            int noOfTickets = ticketTypeRequest.getNoOfTickets();
+            if(noOfTickets <= 0) throw new InvalidRequestException(); //TODO: Consider a new exception class
+            totalTickets += noOfTickets;
+            if(totalTickets > MAX_REQUESTS) throw new TooManyTicketsException();
+            totalSeatsToAllocate += noOfTickets;
+            TicketTypeRequest.Type ticketType = ticketTypeRequest.getTicketType();
+            adultTicketPresent = adultTicketPresent || (ADULT == ticketType);
+            int price = getPricePerTicket(ticketType);
+            totalAmountToPay += (price * noOfTickets);
+        }
+    }
+
+    private static int getPricePerTicket(TicketTypeRequest.Type ticketType) { //TODO: Consider float type for a price
+        switch(ticketType) {
+            case ADULT: return 20;
+            case CHILD: return 10;
+            case INFANT: return 0;
+            default: throw new UnknownTicketTypeException();
+        }
+    }
+
     private final TicketPaymentService ticketPaymentService;
 
     private final SeatReservationService seatReservationService;
@@ -31,34 +60,11 @@ public class TicketServiceImpl implements TicketService {
 
         verify(accountId);
 
-        int totalAmountToPay = 0;
-        int totalSeatsToAllocate = 0;
-        int totalTickets = 0;
-        boolean adult = false;
-        for(TicketTypeRequest ticketTypeRequest: ticketTypeRequests) {
-            if(ticketTypeRequest == null) throw new InvalidRequestException(); //TODO: Consider a new exception class
-            int noOfTickets = ticketTypeRequest.getNoOfTickets();
-            if(noOfTickets <= 0) throw new InvalidRequestException(); //TODO: Consider a new exception class
-            totalTickets += noOfTickets;
-            if(totalTickets > MAX_REQUESTS) throw new TooManyTicketsException();
-            totalSeatsToAllocate += noOfTickets;
-            TicketTypeRequest.Type ticketType = ticketTypeRequest.getTicketType();
-            adult = adult || (ADULT == ticketType);
-            int price = getPricePerTicket(ticketType);
-            totalAmountToPay += (price * noOfTickets);
-        }
-        if(!adult) throw new NoAdultTicketsException();
-        ticketPaymentService.makePayment(accountId, totalAmountToPay);
-        seatReservationService.reserveSeat(accountId, totalSeatsToAllocate);
-    }
-
-    private int getPricePerTicket(TicketTypeRequest.Type ticketType) { //TODO: Consider float type for a price
-        switch(ticketType) {
-            case ADULT: return 20;
-            case CHILD: return 10;
-            case INFANT: return 0;
-            default: throw new UnknownTicketTypeException();
-        }
+        PreProcessedRequest preProcessedRequest = new PreProcessedRequest();
+        for(TicketTypeRequest ticketTypeRequest: ticketTypeRequests) preProcessedRequest.add(ticketTypeRequest);
+        if(!preProcessedRequest.adultTicketPresent) throw new NoAdultTicketsException();
+        ticketPaymentService.makePayment(accountId, preProcessedRequest.totalAmountToPay);
+        seatReservationService.reserveSeat(accountId, preProcessedRequest.totalSeatsToAllocate);
     }
 
     private void verify(Long accountId) throws InvalidAccountException {
