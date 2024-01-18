@@ -34,7 +34,6 @@ public class TicketRequestHelper {
         if(noOfTickets <= 0) throw new InvalidRequestException(); //TODO: Consider a new exception class
         totalTickets += noOfTickets;
         if(totalTickets > MAX_TICKETS) throw new TooManyTicketsException();
-        totalSeatsToAllocate += noOfTickets;
         TicketTypeRequest.Type ticketType = ticketTypeRequest.getTicketType();
         addTickets(ticketType, noOfTickets);
         int price = getPricePerTicket(ticketType);
@@ -57,12 +56,14 @@ public class TicketRequestHelper {
         switch(ticketType) {
             case ADULT:
                 adultTickets += noOfTickets;
+                totalSeatsToAllocate += noOfTickets;
                 break;
             case INFANT:
                 infantTickets += noOfTickets;
                 break;
             case CHILD:
                 childTickets += noOfTickets;
+                totalSeatsToAllocate += noOfTickets;
                 break;
             default: throw new UnknownTicketTypeException();
         }
