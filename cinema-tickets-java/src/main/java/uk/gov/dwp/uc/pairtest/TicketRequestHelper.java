@@ -10,7 +10,6 @@ public class TicketRequestHelper {
     private int totalTickets = 0;
     private int adultTickets = 0;
     private int infantTickets = 0;
-    private int childTickets = 0;
     private static int getPricePerTicket(TicketTypeRequest.Type ticketType) { //TODO: Consider float type for a price
         switch(ticketType) {
             case ADULT: return 20;
@@ -62,7 +61,6 @@ public class TicketRequestHelper {
                 infantTickets += noOfTickets;
                 break;
             case CHILD:
-                childTickets += noOfTickets;
                 totalSeatsToAllocate += noOfTickets;
                 break;
             default: throw new UnknownTicketTypeException();
