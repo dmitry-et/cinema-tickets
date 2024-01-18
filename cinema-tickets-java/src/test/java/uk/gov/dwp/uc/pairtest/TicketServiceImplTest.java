@@ -9,13 +9,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
-import uk.gov.dwp.uc.pairtest.exception.InvalidAccountException;
-import uk.gov.dwp.uc.pairtest.exception.InvalidRequestException;
-import uk.gov.dwp.uc.pairtest.exception.NoAdultTicketsException;
-import uk.gov.dwp.uc.pairtest.exception.TooManyTicketsException;
+import uk.gov.dwp.uc.pairtest.exception.*;
 
 import static org.junit.Assert.fail;
 import static org.mockito.MockitoAnnotations.openMocks;
+import static uk.gov.dwp.uc.pairtest.TicketRequestHelper.MAX_TICKETS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TicketServiceImplTest {
@@ -36,12 +34,9 @@ public class TicketServiceImplTest {
 
     @Test
     public void nullAccount() {
-        final Long invalidAccountId = null;
         try {
-            ticketService.purchaseTickets(invalidAccountId);
-            fail(String.format(
-                    "InvalidAccountException is not thrown for the account id %d is not greater",
-                    invalidAccountId));
+            ticketService.purchaseTickets(null);
+            fail("InvalidAccountException is not thrown for the null account id");
         } catch (InvalidAccountException ignored) {
         }
     }
@@ -52,7 +47,7 @@ public class TicketServiceImplTest {
         try {
             ticketService.purchaseTickets(invalidAccountId);
             fail(String.format(
-                    "InvalidAccountException is not thrown for the account id %d is not greater",
+                    "InvalidAccountException is not thrown for the account id %d which is not greater than 0",
                     invalidAccountId));
         } catch (InvalidAccountException ignored) {
         }
@@ -61,7 +56,7 @@ public class TicketServiceImplTest {
     @Test
     public void invalidRequestLimit() {
         final Long accountId = 1L;
-        final TicketTypeRequest[] requests = new TicketTypeRequest[TicketServiceImpl.MAX_TICKETS + 1];
+        final TicketTypeRequest[] requests = new TicketTypeRequest[MAX_TICKETS + 1];
         for(int i = 0; i < requests.length; i++) {
             requests[i] = new TicketTypeRequest(TicketTypeRequest.Type.INFANT, 1);
         }
@@ -69,7 +64,7 @@ public class TicketServiceImplTest {
             ticketService.purchaseTickets(accountId, requests);
             fail(String.format(
                     "InvalidPurchaseException is not thrown when request limit %d is exceeded",
-                    TicketServiceImpl.MAX_TICKETS));
+                    MAX_TICKETS));
         } catch (TooManyTicketsException ignored) {
         }
     }
@@ -78,13 +73,13 @@ public class TicketServiceImplTest {
     public void invalidRequestLimit0() {
         final Long accountId = 1L;
         final TicketTypeRequest[] requests = new TicketTypeRequest[]{
-            new TicketTypeRequest(TicketTypeRequest.Type.INFANT, TicketServiceImpl.MAX_TICKETS + 1)
+            new TicketTypeRequest(TicketTypeRequest.Type.INFANT, MAX_TICKETS + 1)
         };
         try {
             ticketService.purchaseTickets(accountId, requests);
             fail(String.format(
                     "InvalidPurchaseException is not thrown when request limit %d is exceeded",
-                    TicketServiceImpl.MAX_TICKETS));
+                    MAX_TICKETS));
         } catch (TooManyTicketsException ignored) {
         }
     }
@@ -124,6 +119,21 @@ public class TicketServiceImplTest {
             ticketService.purchaseTickets(accountId, requests);
             fail("NoAdultTicketsException is not thrown when no adult tickets are requested");
         } catch (NoAdultTicketsException ignored) {
+        }
+    }
+
+    @Test
+    public void checkNoOfInfantsAndAdults() {
+        final Long accountId = 1L;
+        final TicketTypeRequest[] requests = new TicketTypeRequest[]{
+                new TicketTypeRequest(TicketTypeRequest.Type.INFANT, 3),
+                new TicketTypeRequest(TicketTypeRequest.Type.CHILD, 2),
+                new TicketTypeRequest(TicketTypeRequest.Type.ADULT, 1)
+        };
+        try {
+            ticketService.purchaseTickets(accountId, requests);
+            fail("TooManyInfantsPerAdultException is not thrown when the number of infants is greater than the number og adults");
+        } catch (TooManyInfantsPerAdultException ignored) {
         }
     }
 }
