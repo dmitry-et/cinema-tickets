@@ -3,18 +3,19 @@ package uk.gov.dwp.uc.pairtest;
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
-import uk.gov.dwp.uc.pairtest.exception.InvalidAccountException;
-import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
-import uk.gov.dwp.uc.pairtest.exception.InvalidRequestException;
-import uk.gov.dwp.uc.pairtest.exception.TooManyTicketsException;
+import uk.gov.dwp.uc.pairtest.exception.*;
+
+import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.ADULT;
 
 public class TicketServiceImpl implements TicketService {
-
-    public final static int MAX_REQUESTS = 20;
 
     private final TicketPaymentService ticketPaymentService;
 
     private final SeatReservationService seatReservationService;
+
+    private static void verifyAccount(Long accountId) throws InvalidAccountException {
+        if(accountId == null || accountId <= 0) throw new InvalidAccountException();
+    }
 
     public TicketServiceImpl(TicketPaymentService ticketPaymentService, SeatReservationService seatReservationService) {
         super();
@@ -30,21 +31,11 @@ public class TicketServiceImpl implements TicketService {
     public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests)
             throws InvalidPurchaseException {
 
-        verify(accountId);
-        verify(ticketTypeRequests);
+        verifyAccount(accountId);
 
-        int totalAmountToPay = 0;
-        ticketPaymentService.makePayment(accountId, totalAmountToPay);
-        int totalSeatsToAllocate = 0;
-        seatReservationService.reserveSeat(accountId, totalSeatsToAllocate);
+        TicketRequestHelper helper = new TicketRequestHelper().addAll(ticketTypeRequests).completeChecks();
+
+        ticketPaymentService.makePayment(accountId, helper.getTotalAmountToPay());
+        seatReservationService.reserveSeat(accountId, helper.getTotalSeatsToAllocate());
     }
-
-    private void verify(Long accountId) throws InvalidAccountException {
-        if(accountId <= 0) throw new InvalidAccountException();
-    }
-
-    private void verify(TicketTypeRequest[] ticketTypeRequests)throws InvalidRequestException {
-        if(ticketTypeRequests.length > MAX_REQUESTS) throw new TooManyTicketsException();
-    }
-
 }
