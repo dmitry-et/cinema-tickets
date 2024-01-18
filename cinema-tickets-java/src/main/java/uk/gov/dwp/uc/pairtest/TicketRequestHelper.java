@@ -28,15 +28,14 @@ class TicketRequestHelper {
     }
 
     TicketRequestHelper add(TicketTypeRequest ticketTypeRequest) {
-        if(ticketTypeRequest == null) throw new InvalidRequestException(); //TODO: Consider a new exception class
+        if(ticketTypeRequest == null) throw new NullRequestException();
         int noOfTickets = ticketTypeRequest.getNoOfTickets();
-        if(noOfTickets <= 0) throw new InvalidRequestException(); //TODO: Consider a new exception class
+        if(noOfTickets <= 0) throw new ZeroOrNegativeTicketNoException();
         totalTickets += noOfTickets;
         if(totalTickets > MAX_TICKETS) throw new TooManyTicketsException();
         TicketTypeRequest.Type ticketType = ticketTypeRequest.getTicketType();
         addTickets(ticketType, noOfTickets);
-        int price = getPricePerTicket(ticketType);
-        totalAmountToPay += (price * noOfTickets);
+        totalAmountToPay += (getPricePerTicket(ticketType) * noOfTickets);
         return this;
     }
 

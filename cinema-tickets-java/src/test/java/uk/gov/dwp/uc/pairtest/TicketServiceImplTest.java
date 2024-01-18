@@ -90,8 +90,8 @@ public class TicketServiceImplTest {
         final TicketTypeRequest[] requests = new TicketTypeRequest[]{ null };
         try {
             ticketService.purchaseTickets(accountId, requests);
-            fail("InvalidRequestException is not thrown when request is null");
-        } catch (InvalidRequestException ignored) {
+            fail("NullRequestException is not thrown when request is null");
+        } catch (NullRequestException ignored) {
         }
     }
 
@@ -103,8 +103,8 @@ public class TicketServiceImplTest {
         };
         try {
             ticketService.purchaseTickets(accountId, requests);
-            fail("InvalidRequestException is not thrown when no of ticket in the request is 0");
-        } catch (InvalidRequestException ignored) {
+            fail("ZeroOrNegativeTicketNoException is not thrown when no of ticket in the request is 0");
+        } catch (ZeroOrNegativeTicketNoException ignored) {
         }
     }
 
