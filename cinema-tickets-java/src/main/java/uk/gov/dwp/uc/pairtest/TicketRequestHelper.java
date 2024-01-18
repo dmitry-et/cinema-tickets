@@ -3,7 +3,7 @@ package uk.gov.dwp.uc.pairtest;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.*;
 
-public class TicketRequestHelper {
+class TicketRequestHelper {
     public static int MAX_TICKETS = 20;
     private int totalAmountToPay = 0;
     private int totalSeatsToAllocate = 0;
