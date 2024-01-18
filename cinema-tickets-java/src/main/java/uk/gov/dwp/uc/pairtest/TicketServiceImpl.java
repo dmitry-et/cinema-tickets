@@ -9,7 +9,7 @@ import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.ADULT;
 
 public class TicketServiceImpl implements TicketService {
 
-    public final static int MAX_REQUESTS = 20;
+    public final static int MAX_TICKETS = 20;
 
     private static class PreProcessedRequest {
         private int totalAmountToPay = 0;
@@ -22,7 +22,7 @@ public class TicketServiceImpl implements TicketService {
             int noOfTickets = ticketTypeRequest.getNoOfTickets();
             if(noOfTickets <= 0) throw new InvalidRequestException(); //TODO: Consider a new exception class
             totalTickets += noOfTickets;
-            if(totalTickets > MAX_REQUESTS) throw new TooManyTicketsException();
+            if(totalTickets > MAX_TICKETS) throw new TooManyTicketsException();
             totalSeatsToAllocate += noOfTickets;
             TicketTypeRequest.Type ticketType = ticketTypeRequest.getTicketType();
             adultTicketPresent = adultTicketPresent || (ADULT == ticketType);

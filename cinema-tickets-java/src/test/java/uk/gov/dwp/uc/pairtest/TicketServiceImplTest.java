@@ -61,7 +61,7 @@ public class TicketServiceImplTest {
     @Test
     public void invalidRequestLimit() {
         final Long accountId = 1L;
-        final TicketTypeRequest[] requests = new TicketTypeRequest[TicketServiceImpl.MAX_REQUESTS + 1];
+        final TicketTypeRequest[] requests = new TicketTypeRequest[TicketServiceImpl.MAX_TICKETS + 1];
         for(int i = 0; i < requests.length; i++) {
             requests[i] = new TicketTypeRequest(TicketTypeRequest.Type.INFANT, 1);
         }
@@ -69,7 +69,7 @@ public class TicketServiceImplTest {
             ticketService.purchaseTickets(accountId, requests);
             fail(String.format(
                     "InvalidPurchaseException is not thrown when request limit %d is exceeded",
-                    TicketServiceImpl.MAX_REQUESTS));
+                    TicketServiceImpl.MAX_TICKETS));
         } catch (TooManyTicketsException ignored) {
         }
     }
@@ -78,13 +78,13 @@ public class TicketServiceImplTest {
     public void invalidRequestLimit0() {
         final Long accountId = 1L;
         final TicketTypeRequest[] requests = new TicketTypeRequest[]{
-            new TicketTypeRequest(TicketTypeRequest.Type.INFANT, TicketServiceImpl.MAX_REQUESTS + 1)
+            new TicketTypeRequest(TicketTypeRequest.Type.INFANT, TicketServiceImpl.MAX_TICKETS + 1)
         };
         try {
             ticketService.purchaseTickets(accountId, requests);
             fail(String.format(
                     "InvalidPurchaseException is not thrown when request limit %d is exceeded",
-                    TicketServiceImpl.MAX_REQUESTS));
+                    TicketServiceImpl.MAX_TICKETS));
         } catch (TooManyTicketsException ignored) {
         }
     }
