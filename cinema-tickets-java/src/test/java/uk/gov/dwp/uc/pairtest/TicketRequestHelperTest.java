@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
+import uk.gov.dwp.uc.pairtest.exception.InvalidRequestException;
 import uk.gov.dwp.uc.pairtest.exception.NoAdultTicketsException;
 import uk.gov.dwp.uc.pairtest.exception.TooManyInfantsPerAdultException;
 
@@ -13,7 +14,7 @@ import static org.junit.Assert.fail;
 public class TicketRequestHelperTest {
 
     @Test
-    public void checkNoOfTicketsAndSeatReservations() {
+    public void checkNoOfTicketsAndSeatReservations() throws InvalidRequestException {
         final TicketTypeRequest[] requests = new TicketTypeRequest[]{
                 new TicketTypeRequest(TicketTypeRequest.Type.INFANT, 3),
                 new TicketTypeRequest(TicketTypeRequest.Type.CHILD, 2),

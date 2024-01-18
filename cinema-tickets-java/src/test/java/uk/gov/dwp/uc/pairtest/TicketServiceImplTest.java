@@ -33,7 +33,7 @@ public class TicketServiceImplTest {
     }
 
     @Test
-    public void nullAccount() {
+    public void nullAccount() throws InvalidPurchaseException {
         try {
             ticketService.purchaseTickets(null);
             fail("InvalidAccountException is not thrown for the null account id");
@@ -42,7 +42,7 @@ public class TicketServiceImplTest {
     }
 
     @Test
-    public void invalidAccount() {
+    public void invalidAccount() throws InvalidPurchaseException {
         final Long invalidAccountId = 0L;
         try {
             ticketService.purchaseTickets(invalidAccountId);
@@ -54,7 +54,7 @@ public class TicketServiceImplTest {
     }
 
     @Test
-    public void invalidRequestLimit() {
+    public void invalidRequestLimit() throws InvalidPurchaseException {
         final Long accountId = 1L;
         final TicketTypeRequest[] requests = new TicketTypeRequest[MAX_TICKETS + 1];
         for(int i = 0; i < requests.length; i++) {
@@ -70,7 +70,7 @@ public class TicketServiceImplTest {
     }
 
     @Test
-    public void invalidRequestLimit0() {
+    public void invalidRequestLimit0() throws InvalidPurchaseException {
         final Long accountId = 1L;
         final TicketTypeRequest[] requests = new TicketTypeRequest[]{
             new TicketTypeRequest(TicketTypeRequest.Type.INFANT, MAX_TICKETS + 1)
@@ -85,7 +85,7 @@ public class TicketServiceImplTest {
     }
 
     @Test
-    public void nullRequest() {
+    public void nullRequest() throws InvalidPurchaseException {
         final Long accountId = 1L;
         final TicketTypeRequest[] requests = new TicketTypeRequest[]{ null };
         try {
@@ -96,7 +96,7 @@ public class TicketServiceImplTest {
     }
 
     @Test
-    public void noOfTicketsIsNotPositive() {
+    public void noOfTicketsIsNotPositive() throws InvalidPurchaseException {
         final Long accountId = 1L;
         final TicketTypeRequest[] requests = new TicketTypeRequest[]{
                 new TicketTypeRequest(TicketTypeRequest.Type.INFANT, 0)
@@ -109,7 +109,7 @@ public class TicketServiceImplTest {
     }
 
     @Test
-    public void noAdultTickets() {
+    public void noAdultTickets() throws InvalidPurchaseException {
         final Long accountId = 1L;
         final TicketTypeRequest[] requests = new TicketTypeRequest[]{
             new TicketTypeRequest(TicketTypeRequest.Type.INFANT, 1),
@@ -123,7 +123,7 @@ public class TicketServiceImplTest {
     }
 
     @Test
-    public void checkNoOfInfantsAndAdults() {
+    public void checkNoOfInfantsAndAdults() throws InvalidPurchaseException {
         final Long accountId = 1L;
         final TicketTypeRequest[] requests = new TicketTypeRequest[]{
                 new TicketTypeRequest(TicketTypeRequest.Type.INFANT, 3),
