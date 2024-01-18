@@ -27,7 +27,7 @@ class TicketRequestHelper {
         return totalSeatsToAllocate;
     }
 
-    TicketRequestHelper add(TicketTypeRequest ticketTypeRequest) {
+    TicketRequestHelper add(TicketTypeRequest ticketTypeRequest) throws InvalidRequestException {
         if(ticketTypeRequest == null) throw new NullRequestException();
         int noOfTickets = ticketTypeRequest.getNoOfTickets();
         if(noOfTickets <= 0) throw new ZeroOrNegativeTicketNoException();
@@ -39,12 +39,12 @@ class TicketRequestHelper {
         return this;
     }
 
-    TicketRequestHelper addAll(TicketTypeRequest... ticketTypeRequests) {
+    TicketRequestHelper addAll(TicketTypeRequest... ticketTypeRequests) throws InvalidRequestException {
         for(TicketTypeRequest ticketTypeRequest: ticketTypeRequests) add(ticketTypeRequest);
         return this;
     }
 
-    TicketRequestHelper completeChecks() {
+    TicketRequestHelper completeChecks() throws InvalidRequestException {
         if(adultTickets < 1) throw new NoAdultTicketsException();
         if(infantTickets > adultTickets) throw new TooManyInfantsPerAdultException();
         return this;
