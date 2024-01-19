@@ -34,9 +34,9 @@ public class TicketRequestHelperTest {
     @Test
     public void randomizedCheckNoOfTicketsAndSeatReservations() throws InvalidRequestException {
         final Random rnd = ThreadLocalRandom.current();
-        final int infants = rnd.nextInt(1, 16);
-        final int children = rnd.nextInt(1, 16);
-        final int adults = rnd.nextInt(infants, 32);
+        final int infants = rnd.nextInt(1, 6);
+        final int adults = rnd.nextInt(infants, MAX_TICKETS - infants - 1);
+        final int children = rnd.nextInt(1, MAX_TICKETS - infants - adults);
         final TicketTypeRequest[] requests = new TicketTypeRequest[]{
                 new TicketTypeRequest(TicketTypeRequest.Type.ADULT, adults),
                 new TicketTypeRequest(TicketTypeRequest.Type.INFANT, infants),
