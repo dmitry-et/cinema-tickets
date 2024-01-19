@@ -118,7 +118,7 @@ public class TicketServiceImplTest {
         try {
             ticketService.purchaseTickets(accountId, requests);
             fail("NoAdultTicketsException is not thrown when no adult tickets are requested");
-        } catch (NoAdultTicketsException ignored) {
+        } catch (ZeroAdultTicketNoException ignored) {
         }
     }
 
