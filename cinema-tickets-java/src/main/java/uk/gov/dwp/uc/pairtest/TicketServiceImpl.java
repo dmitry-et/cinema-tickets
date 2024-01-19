@@ -32,9 +32,9 @@ public class TicketServiceImpl implements TicketService {
 
         verifyAccount(accountId);
 
-        TicketRequestHelper helper = new TicketRequestHelper().addAll(ticketTypeRequests).completeChecks();
+        final TicketRequestHelper helper = new TicketRequestHelper().addAll(ticketTypeRequests).check();
 
-        ticketPaymentService.makePayment(accountId, helper.getTotalAmountToPay());
-        seatReservationService.reserveSeat(accountId, helper.getTotalSeatsToAllocate());
+        ticketPaymentService.makePayment(accountId, helper.getInfo().getTotalAmountToPay());
+        seatReservationService.reserveSeat(accountId, helper.getInfo().getTotalSeatsToAllocate());
     }
 }
