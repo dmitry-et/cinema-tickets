@@ -8,6 +8,8 @@ import uk.gov.dwp.uc.pairtest.exception.InvalidRequestException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static uk.gov.dwp.uc.pairtest.TicketRequestHelper.*;
+
 @RunWith(MockitoJUnitRunner.class)
 public class TicketRequestHelperTest {
 
@@ -21,7 +23,8 @@ public class TicketRequestHelperTest {
                 new TicketTypeRequest(TicketTypeRequest.Type.ADULT, 5)
         };
         TicketRequestHelper helper = new TicketRequestHelper().addAll(requests).check();
-        assertEquals(3 * 0 + 2 * 10 + 7 * 20, helper.getInfo().getTotalAmountToPay());
+        assertEquals(3 * INFANT_TICKET_PRICE + 2 * CHILD_TICKET_PRICE + 7 * ADULT_TICKET_PRICE,
+                helper.getInfo().getTotalAmountToPay());
         assertEquals(2 + 7, helper.getInfo().getTotalSeatsToAllocate());
     }
 }
