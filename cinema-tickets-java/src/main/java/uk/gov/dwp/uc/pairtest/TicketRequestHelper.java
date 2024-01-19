@@ -49,7 +49,7 @@ class TicketRequestHelper {
         try {
            value = Integer.parseInt(sAdultTicketPrice);
         } catch(NumberFormatException ignored) {
-           value = 0;
+           value = 20;
         }
         ADULT_TICKET_PRICE = (value >= 0) ? value : 20;
     }
